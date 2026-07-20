@@ -21,6 +21,9 @@ npm-debug.log*
 # Data (bookings DB - exclude from git, use a real DB in production)
 data/bookings.json
 
+# TypeScript build cache
+tsconfig.tsbuildinfo
+
 # OS
 .DS_Store
 Thumbs.db
