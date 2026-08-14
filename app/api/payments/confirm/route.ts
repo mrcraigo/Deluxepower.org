@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     const { bookingId, paymentIntentId } = await req.json();
     if (!bookingId) return NextResponse.json({ error: 'bookingId required' }, { status: 400 });
 
-    const booking = getBookingById(bookingId);
+    const booking = await getBookingById(bookingId);
     if (!booking) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
     // Verify payment succeeded with Stripe
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const updated = updateBookingStatus(booking.id, 'confirmed', paymentIntentId, 'Payment received');
+    const updated = await updateBookingStatus(booking.id, 'confirmed', 'Payment received');
     return NextResponse.json({ booking: updated });
   } catch (err) {
     console.error(err);

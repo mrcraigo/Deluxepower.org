@@ -7,44 +7,44 @@ export async function POST(req: NextRequest) {
     const { bookingId } = await req.json();
     if (!bookingId) return NextResponse.json({ error: 'bookingId required' }, { status: 400 });
 
-    const booking = getBookingById(bookingId);
+    const booking = await getBookingById(bookingId);
     if (!booking) return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
 
     // Create or retrieve Stripe customer
-    let stripeCustomerId = booking.stripeCustomerId;
+    let stripeCustomerId = booking.stripe_customer_id ?? undefined;
     if (!stripeCustomerId) {
       const customer = await stripe.customers.create({
-        email: booking.customerEmail,
-        name: booking.customerName,
-        phone: booking.customerPhone,
+        email: booking.customer_email,
+        name: booking.customer_name,
+        phone: booking.customer_phone,
         metadata: { bookingId: booking.id },
       });
       stripeCustomerId = customer.id;
     }
 
-    // Create a single PaymentIntent for the full amount
+    // Create a single PaymentIntent for the full amount.
     // The escrow model is enforced at the application layer:
-    // - We only pay out (release) when admin marks job complete + customer approves
+    // funds are only released when admin marks job complete + customer approves.
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: formatAmountForStripe(booking.quoteTotal),
+      amount: formatAmountForStripe(booking.quote_total),
       currency: 'aud',
       customer: stripeCustomerId,
-      description: `DeluxePower - ${booking.serviceName} - ${booking.id}`,
+      description: `DeluxePower - ${booking.service_name} - ${booking.id}`,
       metadata: {
         bookingId: booking.id,
-        serviceId: booking.serviceId,
-        customerName: booking.customerName,
-        materialsDeposit: booking.materialsDeposit.toString(),
-        labourBalance: booking.labourBalance.toString(),
-        jobDate: booking.date,
+        serviceId: booking.service_id,
+        customerName: booking.customer_name,
+        materialsDeposit: booking.materials_deposit.toString(),
+        labourBalance: booking.labour_balance.toString(),
+        jobDate: booking.scheduled_date,
         suburb: booking.suburb,
       },
-      receipt_email: booking.customerEmail,
+      receipt_email: booking.customer_email,
       statement_descriptor_suffix: 'DELUXEPOWER',
     });
 
-    updateBookingPayment(booking.id, paymentIntent.id, stripeCustomerId);
-    updateBookingStatus(booking.id, 'pending_payment', paymentIntent.id);
+    await updateBookingPayment(booking.id, paymentIntent.id, stripeCustomerId);
+    await updateBookingStatus(booking.id, 'pending_payment');
 
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
   } catch (err) {

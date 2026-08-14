@@ -36,7 +36,7 @@ function ConfirmationContent() {
         </div>
         <h1 className="text-3xl font-bold text-navy-900">Booking Confirmed!</h1>
         <p className="mt-2 text-slate-500">
-          Thanks {booking.customerName.split(' ')[0]}! Your booking is confirmed and payment received. We&apos;ll see you soon.
+          Thanks {booking.customer_name.split(' ')[0]}! Your booking is confirmed and payment received. We&apos;ll see you soon.
         </p>
 
         <div className="mt-8 card text-left">
@@ -49,19 +49,19 @@ function ConfirmationContent() {
           <div className="space-y-3 text-sm">
             <div className="flex items-start gap-2">
               <span className="font-mono font-bold text-slate-400 text-xs mt-0.5">REF</span>
-              <span className="font-mono font-semibold text-navy-900">{booking.id}</span>
+              <span className="font-mono font-semibold text-navy-900">{booking.booking_ref ?? booking.id}</span>
             </div>
             <div className="flex items-center gap-2 text-slate-700">
               <Calendar className="h-4 w-4 text-electric-500 shrink-0" />
-              {formatDate(booking.date)} at {formatTime(booking.timeSlot)}
+              {formatDate(booking.scheduled_date)} at {formatTime(booking.scheduled_time)}
             </div>
             <div className="flex items-center gap-2 text-slate-700">
               <MapPin className="h-4 w-4 text-electric-500 shrink-0" />
-              {booking.address}, {booking.suburb}, ACT
+              {booking.street_address}, {booking.suburb}, ACT
             </div>
             <div className="flex items-center gap-2 text-slate-700">
               <Mail className="h-4 w-4 text-electric-500 shrink-0" />
-              Confirmation sent to {booking.customerEmail}
+              Confirmation sent to {booking.customer_email}
             </div>
           </div>
 
@@ -69,15 +69,15 @@ function ConfirmationContent() {
             <div className="text-sm space-y-2">
               <div className="flex justify-between">
                 <span className="text-slate-500">Materials deposit paid</span>
-                <span className="font-semibold text-slate-800">{formatCurrency(booking.materialsDeposit)}</span>
+                <span className="font-semibold text-slate-800">{formatCurrency(booking.materials_deposit)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500 flex items-center gap-1"><Lock className="h-3.5 w-3.5" /> Labour balance (escrow)</span>
-                <span className="font-semibold text-slate-800">{formatCurrency(booking.labourBalance)}</span>
+                <span className="font-semibold text-slate-800">{formatCurrency(booking.labour_balance)}</span>
               </div>
               <div className="flex justify-between border-t border-slate-200 pt-2 font-semibold">
                 <span>Total paid</span>
-                <span>{formatCurrency(booking.quoteTotal)}</span>
+                <span>{formatCurrency(booking.quote_total)}</span>
               </div>
             </div>
           </div>
@@ -89,8 +89,8 @@ function ConfirmationContent() {
           <ol className="space-y-3">
             {[
               { icon: Mail, text: 'You\'ll receive a confirmation email with all booking details.' },
-              { icon: Phone, text: `We'll call you at ${booking.customerPhone} to confirm any specific requirements.` },
-              { icon: Clock, text: `Your electrician will arrive on ${formatDate(booking.date)} at ${formatTime(booking.timeSlot)}.` },
+              { icon: Phone, text: `We'll call you at ${booking.customer_phone} to confirm any specific requirements.` },
+              { icon: Clock, text: `Your electrician will arrive on ${formatDate(booking.scheduled_date)} at ${formatTime(booking.scheduled_time)}.` },
               { icon: CheckCircle2, text: 'After the job is done, you\'ll receive an email to approve the work and release payment.' },
             ].map(({ icon: Icon, text }, i) => (
               <li key={i} className="flex items-start gap-3 text-sm text-slate-600">
@@ -107,10 +107,7 @@ function ConfirmationContent() {
         </div>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <a
-            href={`tel:${BUSINESS_INFO.phone}`}
-            className="btn-outline px-8 py-3"
-          >
+          <a href={`tel:${BUSINESS_INFO.phone}`} className="btn-outline px-8 py-3">
             <Phone className="h-4 w-4" /> {BUSINESS_INFO.phone}
           </a>
           <Link href="/" className="btn-primary px-8 py-3">

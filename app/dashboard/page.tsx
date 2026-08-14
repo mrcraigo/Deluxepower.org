@@ -57,17 +57,17 @@ function BookingCard({ booking, onStatusChange }: { booking: Booking; onStatusCh
         <div className="flex items-center gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-xs font-bold text-slate-400">{booking.id}</span>
+              <span className="font-mono text-xs font-bold text-slate-400">{booking.booking_ref ?? booking.id}</span>
               <span className={`badge ${statusColor(booking.status)}`}>{statusLabel(booking.status)}</span>
             </div>
-            <div className="mt-0.5 font-semibold text-navy-900">{booking.serviceName}</div>
-            <div className="text-sm text-slate-500">{booking.customerName} · {booking.suburb}</div>
+            <div className="mt-0.5 font-semibold text-navy-900">{booking.service_name}</div>
+            <div className="text-sm text-slate-500">{booking.customer_name} · {booking.suburb}</div>
           </div>
         </div>
         <div className="flex items-center gap-4">
           <div className="text-right hidden sm:block">
-            <div className="text-sm font-semibold text-navy-900">{formatCurrency(booking.quoteTotal)}</div>
-            <div className="text-xs text-slate-400">{formatDate(booking.date)}</div>
+            <div className="text-sm font-semibold text-navy-900">{formatCurrency(booking.quote_total)}</div>
+            <div className="text-xs text-slate-400">{formatDate(booking.scheduled_date)}</div>
           </div>
           {expanded ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
         </div>
@@ -79,19 +79,19 @@ function BookingCard({ booking, onStatusChange }: { booking: Booking; onStatusCh
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-slate-600">
                 <Calendar className="h-4 w-4 text-electric-500" />
-                {formatDate(booking.date)} at {formatTime(booking.timeSlot)}
+                {formatDate(booking.scheduled_date)} at {formatTime(booking.scheduled_time)}
               </div>
               <div className="flex items-center gap-2 text-slate-600">
                 <MapPin className="h-4 w-4 text-electric-500" />
-                {booking.address}, {booking.suburb}
+                {booking.street_address}, {booking.suburb}
               </div>
               <div className="flex items-center gap-2 text-slate-600">
                 <Phone className="h-4 w-4 text-electric-500" />
-                {booking.customerPhone}
+                {booking.customer_phone}
               </div>
               <div className="flex items-center gap-2 text-slate-600">
                 <Mail className="h-4 w-4 text-electric-500" />
-                {booking.customerEmail}
+                {booking.customer_email}
               </div>
               {booking.notes && (
                 <div className="rounded-lg bg-slate-50 p-2.5 text-xs text-slate-600 italic">
@@ -103,20 +103,20 @@ function BookingCard({ booking, onStatusChange }: { booking: Booking; onStatusCh
               <div className="rounded-lg bg-slate-50 p-3 space-y-1.5 text-sm">
                 <div className="flex justify-between">
                   <span className="text-slate-500">Materials deposit</span>
-                  <span className="font-medium text-amber-700">{formatCurrency(booking.materialsDeposit)}</span>
+                  <span className="font-medium text-amber-700">{formatCurrency(booking.materials_deposit)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Labour (escrow)</span>
-                  <span className="font-medium text-blue-700">{formatCurrency(booking.labourBalance)}</span>
+                  <span className="font-medium text-blue-700">{formatCurrency(booking.labour_balance)}</span>
                 </div>
                 <div className="flex justify-between font-semibold border-t border-slate-200 pt-1.5">
                   <span>Total</span>
-                  <span>{formatCurrency(booking.quoteTotal)}</span>
+                  <span>{formatCurrency(booking.quote_total)}</span>
                 </div>
               </div>
-              {booking.stripePaymentIntentId && (
+              {booking.stripe_payment_intent_id && (
                 <div className="text-xs text-slate-400">
-                  Stripe PI: <span className="font-mono">{booking.stripePaymentIntentId}</span>
+                  Stripe PI: <span className="font-mono">{booking.stripe_payment_intent_id}</span>
                 </div>
               )}
             </div>
@@ -126,12 +126,12 @@ function BookingCard({ booking, onStatusChange }: { booking: Booking; onStatusCh
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Status History</h4>
             <div className="space-y-1">
-              {booking.statusHistory.map((h, i) => (
+              {(booking.status_history ?? []).map((h, i) => (
                 <div key={i} className="flex items-center gap-2 text-xs text-slate-500">
                   <Clock className="h-3 w-3 shrink-0 text-slate-300" />
                   <span className="font-medium">{statusLabel(h.status)}</span>
                   <span className="text-slate-300">—</span>
-                  <span>{new Date(h.at).toLocaleString('en-AU')}</span>
+                  <span>{new Date(h.changed_at).toLocaleString('en-AU')}</span>
                   {h.note && <span className="italic">({h.note})</span>}
                 </div>
               ))}
@@ -194,6 +194,12 @@ export default function DashboardPage() {
       .then((data) => { setBookings(data.bookings ?? []); setLoading(false); })
       .catch(() => setLoading(false));
   }
+
+  // Auto-load when authenticated
+  useEffect(() => {
+    if (authed) loadBookings();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authed]);
 
   const filtered = filter === 'all' ? bookings : bookings.filter((b) => b.status === filter);
 
@@ -309,7 +315,7 @@ export default function DashboardPage() {
         ) : (
           <div className="space-y-3">
             {filtered
-              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
               .map((b) => (
                 <BookingCard key={b.id} booking={b} onStatusChange={loadBookings} />
               ))}

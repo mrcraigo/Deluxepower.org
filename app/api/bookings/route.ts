@@ -1,18 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import {
-  getAllBookings,
-  getBookingById,
-  createBooking,
-} from '@/lib/bookings';
+import { getAllBookings, getBookingById, createBooking } from '@/lib/bookings';
 
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id');
   if (id) {
-    const booking = getBookingById(id);
+    const booking = await getBookingById(id);
     if (!booking) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     return NextResponse.json({ booking });
   }
-  const bookings = getAllBookings();
+  const bookings = await getAllBookings();
   return NextResponse.json({ bookings });
 }
 
@@ -29,7 +25,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const booking = createBooking({
+    const booking = await createBooking({
       serviceId,
       serviceName,
       customerName,
@@ -43,7 +39,6 @@ export async function POST(req: NextRequest) {
       quoteTotal,
       materialsDeposit,
       labourBalance,
-      status: 'pending_payment',
     });
 
     return NextResponse.json({ bookingId: booking.id, booking });

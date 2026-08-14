@@ -23,9 +23,9 @@ export async function POST(req: NextRequest) {
     const pi = event.data.object as Stripe.PaymentIntent;
     const bookingId = pi.metadata?.bookingId;
     if (bookingId) {
-      const booking = getBookingById(bookingId);
+      const booking = await getBookingById(bookingId);
       if (booking && booking.status === 'pending_payment') {
-        updateBookingStatus(bookingId, 'confirmed', pi.id, 'Payment confirmed via webhook');
+        await updateBookingStatus(bookingId, 'confirmed', 'Payment confirmed via webhook');
       }
     }
   }

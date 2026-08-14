@@ -63,9 +63,9 @@ function CheckoutForm({ booking }: { booking: Booking }) {
       payment_method: {
         card,
         billing_details: {
-          name: booking.customerName,
-          email: booking.customerEmail,
-          phone: booking.customerPhone,
+          name: booking.customer_name,
+          email: booking.customer_email,
+          phone: booking.customer_phone,
         },
       },
     });
@@ -122,7 +122,7 @@ function CheckoutForm({ booking }: { booking: Booking }) {
             ) : (
               <span className="flex items-center justify-center gap-2">
                 <Lock className="h-4 w-4" />
-                Pay {formatCurrency(booking.quoteTotal)} Securely
+                Pay {formatCurrency(booking.quote_total)} Securely
               </span>
             )}
           </button>
@@ -196,19 +196,19 @@ function PaymentContent() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Service</span>
-                  <span className="text-right font-medium text-slate-800">{booking.serviceName}</span>
+                  <span className="text-right font-medium text-slate-800">{booking.service_name}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Date</span>
-                  <span className="text-slate-800">{formatDate(booking.date)}</span>
+                  <span className="text-slate-800">{formatDate(booking.scheduled_date)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Time</span>
-                  <span className="text-slate-800">{formatTime(booking.timeSlot)}</span>
+                  <span className="text-slate-800">{formatTime(booking.scheduled_time)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Address</span>
-                  <span className="text-right text-slate-800">{booking.address}, {booking.suburb}</span>
+                  <span className="text-right text-slate-800">{booking.street_address}, {booking.suburb}</span>
                 </div>
               </div>
             </div>
@@ -221,7 +221,7 @@ function PaymentContent() {
                     <div className="font-medium text-amber-900">Materials Deposit</div>
                     <div className="text-xs text-amber-700">Charged today</div>
                   </div>
-                  <span className="font-bold text-amber-900">{formatCurrency(booking.materialsDeposit)}</span>
+                  <span className="font-bold text-amber-900">{formatCurrency(booking.materials_deposit)}</span>
                 </div>
                 <div className="flex justify-between rounded-lg bg-blue-50 px-3 py-2.5">
                   <div>
@@ -230,11 +230,11 @@ function PaymentContent() {
                     </div>
                     <div className="text-xs text-blue-700">Held in escrow — released on your approval</div>
                   </div>
-                  <span className="font-bold text-blue-900">{formatCurrency(booking.labourBalance)}</span>
+                  <span className="font-bold text-blue-900">{formatCurrency(booking.labour_balance)}</span>
                 </div>
                 <div className="flex justify-between border-t border-slate-200 pt-2 font-semibold text-slate-800">
                   <span>Total charged today</span>
-                  <span>{formatCurrency(booking.quoteTotal)}</span>
+                  <span>{formatCurrency(booking.quote_total)}</span>
                 </div>
               </div>
             </div>
