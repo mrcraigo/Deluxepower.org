@@ -231,8 +231,9 @@ export async function updateBookingStatus(
 ): Promise<Booking | null> {
   const db = getAdminClient();
 
-  const updateData: Record<string, unknown> = { status };
-  if (status === 'completed') updateData.completed_at = new Date().toISOString();
+  const updateData = status === 'completed'
+    ? { status, completed_at: new Date().toISOString() }
+    : { status };
 
   const { error: updateErr } = await db.from('bookings').update(updateData).eq('id', id);
   if (updateErr) throw new Error(updateErr.message);
