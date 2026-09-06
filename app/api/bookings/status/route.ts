@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { updateBookingStatus, type BookingStatus } from '@/lib/bookings';
 
