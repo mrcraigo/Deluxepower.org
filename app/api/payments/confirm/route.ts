@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { getBookingById, updateBookingStatus } from '@/lib/bookings';
 import { stripe } from '@/lib/stripe';
